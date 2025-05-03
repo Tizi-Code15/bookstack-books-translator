@@ -1,0 +1,10 @@
+# liste off ignore file 
+
+.env
+
+logs/
+
+**/__pycache__/
+*.py[cod]
+
+**/*.json 
