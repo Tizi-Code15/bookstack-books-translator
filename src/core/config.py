@@ -22,9 +22,3 @@ if not URL or not TOKEN or not TRANSLATE_URL:
 
 
 
-
-
-#URL = "https://wva.siveo.net"
-#TOKEN = "l8b1MWpfN2oefXRAyeLt3ggzhNSoKVzO:L06uSSXnXYIU7J082GAFUDVlJvuyoSVV"
-#TRANSLATE_URL = "http://127.0.0.1:5000/translate"
-##BOOK_ID_TO_TRANSLATE = 21 
