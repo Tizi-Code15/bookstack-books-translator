@@ -1,50 +1,52 @@
-# user_id.py:
-import requests, json, os, sys
+import requests
+import json
+import os
+import sys
 from core.config import URL, TOKEN
+from core.logger import logger  # Importation du logger
 
-# Add parent directory to system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Define HTTP headers for the API requests
+# En-têtes pour les requêtes API
 headers = {
-    "authorization": f"Token {TOKEN}",
+    "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
 }
 
-# Retrieve the list of users from the API
 def get_users():
+    """Récupère la liste des utilisateurs depuis l'API."""
     try:
-        # Send a GET request to the API endpoint 
+        logger.info("Envoi de la requête pour récupérer les utilisateurs depuis l'API.")
         response = requests.get(f"{URL}/api/users", headers=headers)
-        response.raise_for_status()
-        # Extract the "data" field from the JSON response
+        response.raise_for_status()  # Vérifie que la requête a réussi
+        
+        # Traitement des utilisateurs renvoyés par l'API
         users_list = response.json().get("data", [])
-        print(f"Number of users retrieved: {len(users_list)}")
+        logger.info(f"{len(users_list)} utilisateurs récupérés.")
         return users_list
     except requests.exceptions.RequestException as e:
-        # Handle connection or HTTP-related errors
-        print(f"Error retrieving users: {e}")
+        # Log détaillé de l'erreur
+        logger.error(f"Erreur lors de la récupération des utilisateurs : {e}")
         return []
 
-# Save user data to a JSON file
 def save_users_to_json(users):
-
+    """Sauvegarde les utilisateurs récupérés dans un fichier JSON."""
     if not users:
-        print("No users to save.")
+        logger.warning("Aucun utilisateur à sauvegarder.")
         return
     
-    # Get absolute path from project root folder
+    # Définir le répertoire et le chemin du fichier de sauvegarde
     medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     data_dir = os.path.join(medulla_verse, 'data', 'User_Data')
-    os.makedirs(data_dir, exist_ok=True)
-
-    # Full path to the output JSON file 
+    os.makedirs(data_dir, exist_ok=True)  # Créer le répertoire si nécessaire
+    
     file_path = os.path.join(data_dir, 'users_data.json')
-
+    
     try:
-        # Write the user data to a JSON file
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(users, f, indent=4, ensure_ascii=False)
-        print("User data successfully saved to: data/User_Data")
+        logger.info("Les données des utilisateurs ont été sauvegardées avec succès.")
     except Exception as e:
-        print(f"Error creating the JSON file: {e}")
+        # Log détaillé de l'erreur de sauvegarde
+        logger.error(f"Erreur lors de la sauvegarde des utilisateurs dans le fichier {file_path}: {e}")
+

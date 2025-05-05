@@ -1,13 +1,12 @@
-# English.py
-
 import os
 import requests
 import json
-from core.config import URL, TOKEN, TRANSLATE_URL
 
-# Translation function that sends a translation request to the API
+from core.config import URL, TOKEN, TRANSLATE_URL
+from core.logger import logger
+
+# Traduction d'un texte donné via l'API LibreTranslate
 def translate(text, target_language="en"):
-    # Constructing a dictionary containing the data to be sent in the request
     payload = {
         "q": text,
         "source": "fr",
@@ -15,109 +14,121 @@ def translate(text, target_language="en"):
         "format": "html"
     }
     try:
-        # Sending the POST request to translate the text
+        logger.debug(f"Demande de traduction envoyée pour : {text[:30]}... (vers {target_language})")  # Changer en debug
         response = requests.post(TRANSLATE_URL, json=payload)
-        response.raise_for_status() # Get the status code and raise an exception if needed
-        # Retrieve the response in JSON format
-        return response.json()['translatedText']
+        response.raise_for_status()
+        translated_text = response.json().get("translatedText", "")
+        logger.debug(f"Traduction réussie : {translated_text[:30]}...")  # Changer en debug
+        return translated_text
     except requests.exceptions.RequestException as e:
-        print(f"Translation error: {e}")
-        return text
+        logger.error(f"Erreur de traduction : {e}")
+        return text  # En cas d’erreur, on retourne le texte original
 
-# Function to save translation logs to a JSON file
+# Sauvegarde des logs de traduction dans un fichier JSON
 def save_translation_log(log_data):
+    """Sauvegarde les logs de traduction dans un fichier JSON."""
     if not log_data:
-        print("No logs to save.")
+        logger.warning("Aucun log à sauvegarder.")  # Log si aucun log à sauvegarder
         return
     
-    # Get absolute path from the project root folder
-    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    data_dir = os.path.join(medulla_verse, 'data', 'English_Data')
-    os.makedirs(data_dir, exist_ok=True)
-
-    # Full path to the output JSON file
+    # Définir le répertoire de sauvegarde pour les logs de traduction
+    # Ici, 'data' est directement sous le dossier du projet, pas besoin d'ajouter 'src/'
+    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    data_dir = os.path.join(medulla_verse, 'data', 'English_Data')  # Le répertoire de sauvegarde des logs
+    os.makedirs(data_dir, exist_ok=True)  # Créer le répertoire si nécessaire
+    
     file_path = os.path.join(data_dir, 'English_translation.json')
-
+    
     try:
-        # Write the log data
+        
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=4, ensure_ascii=False)
-        print("Translation logs successfully saved.")
+            
     except Exception as e:
-        print(f"Error saving the translation log: {e}")
+        # Log d'erreur si la sauvegarde échoue
+        logger.error(f"Erreur lors de la sauvegarde des logs de traduction : {e}")
 
-# Main function for translating the book
+# Fonction principale de traduction d’un livre par ID
 def run_translation(book_id):
     headers = {
         "Authorization": f"Token {TOKEN}",
         "Content-Type": "application/json"
     }
-    
-    log = []  # Create a list to store translation steps
 
-    # Retrieve book details by making a request to the API
-    book_response = requests.get(f"{URL}/api/books/{book_id}", headers=headers)
-    # Store the details in JSON format
-    book = book_response.json()
-    translated_title = translate(book.get("name", ""))
-    translated_desc = translate(book.get("description", ""))
+    log = []
+    logger.info(f"Début de la traduction du livre ID : {book_id}")
 
-    # Create a new translated book
-    book_payload = {
-        "name": translated_title,
-        "description": translated_desc
-    }
-    create_book_response = requests.post(f"{URL}/api/books", headers=headers, json=book_payload)
-    new_book = create_book_response.json()
-    new_book_id = new_book["id"]
-    log.append({"step": "book", "message": f"New book created: {new_book_id} - {translated_title}"})
+    try:
+        # Récupération du livre original
+        book_response = requests.get(f"{URL}/api/books/{book_id}", headers=headers)
+        book_response.raise_for_status()
+        book = book_response.json()
+        logger.info(f"Livre récupéré : {book.get('name', 'Inconnu')}")
 
-    # Retrieve and translate the chapters
-    chapters_response = requests.get(f"{URL}/api/chapters", headers=headers)
-    chapters = [c for c in chapters_response.json().get("data", []) if c.get("book_id") == book_id]
+        # Traduction du titre et de la description
+        translated_title = translate(book.get("name", ""))
+        translated_desc = translate(book.get("description", ""))
 
-    for chapter in chapters:
-        chapter_id = chapter["id"]
-        translated_chapter_name = translate(chapter["name"])
-        log.append({"step": "chapter", "message": f"Chapter: {translated_chapter_name}"})
-
-        # Create the chapter in the new book
-        chapter_payload = {
-            "book_id": new_book_id,
-            "name": translated_chapter_name
+        # Création du nouveau livre traduit
+        book_payload = {
+            "name": translated_title,
+            "description": translated_desc
         }
-        chapter_create_response = requests.post(f"{URL}/api/chapters", headers=headers, json=chapter_payload)
-        new_chapter = chapter_create_response.json()
-        new_chapter_id = new_chapter["id"]
+        new_book_resp = requests.post(f"{URL}/api/books", headers=headers, json=book_payload)
+        new_book_resp.raise_for_status()
+        new_book = new_book_resp.json()
+        new_book_id = new_book["id"]
+        log.append({"step": "book", "message": f"Livre créé : {new_book_id} - {translated_title}"})
 
-        # Retrieve and translate the pages related to the chapter
-        pages_response = requests.get(f"{URL}/api/pages", headers=headers)
-        pages = [p for p in pages_response.json().get("data", []) if p.get("chapter_id") == chapter_id]
+        # Récupération et traduction des chapitres
+        chapters_resp = requests.get(f"{URL}/api/chapters", headers=headers)
+        chapters_resp.raise_for_status()
+        chapters = [c for c in chapters_resp.json().get("data", []) if c.get("book_id") == book_id]
 
-        for page in pages:
-            page_id = page["id"]
-            page_detail_response = requests.get(f"{URL}/api/pages/{page_id}", headers=headers)
-            page_data = page_detail_response.json()
+        for chapter in chapters:
+            chapter_id = chapter["id"]
+            translated_chapter_name = translate(chapter["name"])
+            log.append({"step": "chapter", "message": f"Chapitre traduit : {translated_chapter_name}"})
 
-            translated_page_title = translate(page_data.get("name", ""))
-            translated_html = translate(page_data.get("html", ""))
-
-            # Create the translated page in the new book
-            page_payload = {
+            # Création du chapitre dans le nouveau livre
+            chapter_payload = {
                 "book_id": new_book_id,
-                "chapter_id": new_chapter_id,
-                "name": translated_page_title,
-                "html": translated_html
+                "name": translated_chapter_name
             }
-            create_page_response = requests.post(f"{URL}/api/pages", headers=headers, json=page_payload)
-            created_page = create_page_response.json()
-            log.append({"step": "page creation", "message": f"Page created: {created_page['id']}"})
+            chapter_resp = requests.post(f"{URL}/api/chapters", headers=headers, json=chapter_payload)
+            chapter_resp.raise_for_status()
+            new_chapter_id = chapter_resp.json()["id"]
 
-    # Save the logs to a JSON file
-    save_translation_log(log)
+            # Récupération et traduction des pages du chapitre
+            pages_resp = requests.get(f"{URL}/api/pages", headers=headers)
+            pages_resp.raise_for_status()
+            pages = [p for p in pages_resp.json().get("data", []) if p.get("chapter_id") == chapter_id]
 
-    print("Translation to English completed.")
+            for page in pages:
+                page_id = page["id"]
+                page_detail_resp = requests.get(f"{URL}/api/pages/{page_id}", headers=headers)
+                page_detail_resp.raise_for_status()
+                page_data = page_detail_resp.json()
 
-# If the file is run directly
-if __name__ == "__main__":
-    run_translation(21)
+                translated_title = translate(page_data.get("name", ""))
+                translated_html = translate(page_data.get("html", ""))
+
+                page_payload = {
+                    "book_id": new_book_id,
+                    "chapter_id": new_chapter_id,
+                    "name": translated_title,
+                    "html": translated_html
+                }
+
+                created_page_resp = requests.post(f"{URL}/api/pages", headers=headers, json=page_payload)
+                created_page_resp.raise_for_status()
+                created_page = created_page_resp.json()
+                log.append({"step": "page", "message": f"Page créée : {created_page['id']}"})
+
+        # Sauvegarde des logs
+        save_translation_log(log)
+        logger.info("Traduction vers l'anglais terminée avec succès.")
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Erreur pendant la traduction : {e}")
+        save_translation_log(log)  # Sauvegarder les logs partiels en cas d'erreur)

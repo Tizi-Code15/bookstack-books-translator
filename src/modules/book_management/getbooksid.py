@@ -1,55 +1,60 @@
-# getbooksid.py
-import requests, json, os, sys
+import requests
+import json
+import os
+import sys
+
 from core.config import URL, TOKEN
-#from logger.logger import logger
+from core.logger import logger
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Déterminer le dossier racine du projet
+CURRENT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))  # <- pour aller jusqu'à 'src'
 
+# S'assurer que 'src' est dans le sys.path
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
 
-
-headers = {
+# Configuration des headers pour l'API BookStack
+HEADERS = {
     "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
 }
 
 def get_books_id():
+    """
+    Récupère la liste des livres depuis l'API BookStack.
+    Retourne une liste contenant les informations des livres.
+    """
     try:
-        # log du début de l'appel d'api 
-        print("Requête pour récupérer les livres depuis l'API envoyé")
-
-        # Envoi de la requete GET
-        response = requests.get(f"{URL}/api/books", headers=headers)
-        # Récupération du code de statut et levée d'une exception s'il y a une erreur lors de la requête
+        logger.info("Envoi de la requête pour récupérer les livres depuis l'API.")
+        response = requests.get(f"{URL}/api/books", headers=HEADERS)
         response.raise_for_status()
         books_id = response.json().get("data", [])
-        # log quand l'opération de la récupération est réussi 
-        print(f"{len(books_id)} Livres récupérés avec succés.")
+        logger.info(f"{len(books_id)} livres récupérés avec succès.")
         return books_id
-    
     except requests.exceptions.RequestException as e:
-        print(f"Erreur récupération des livres : {e}")
-        #logger.error(f"Erreur de récupérations des livres : {e}")
+        logger.error(f"Erreur lors de la récupération des livres : {e}")
         return []
 
 def save_books_info_to_json(books_info):
+    """
+    Sauvegarde les données des livres dans un fichier JSON
+    dans le dossier 'src/data/Books_Data/'.
+    """
     if not books_info:
-        print("No books to save")
+        logger.warning("Aucun livre à sauvegarder.")
         return
-    # Get absolute path from foolder root
-    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    data_dir = os.path.join(medulla_verse, 'data' 'Books_Data')
+
+    # Dossier cible pour la sauvegarde
+    data_dir = os.path.join(PROJECT_ROOT, 'data', 'Books_Data')
     os.makedirs(data_dir, exist_ok=True)
+
+    file_path = os.path.join(data_dir, "book_ids.json")
+
     try:
-        # log de l'opération de sauvegarde 
-        print(f"Sauvegarde de {len(books_info)} livres dabs 'books_ids.json '.'")
-        # Sauvegarde des livres dans le fichier JSON
-        with open("book_ids.json", "w", encoding="utf-8") as f:
+        logger.info(f"Sauvegarde de {len(books_info)} livres dans 'book_ids.json'.")
+        with open(file_path, "w", encoding="utf-8") as f:
             json.dump(books_info, f, indent=4, ensure_ascii=False)
-        
-        # log de réussite de la sauvegardes
-        print("Les livre sont sauvegarder avec succés")
+        logger.info("Les livres ont été sauvegardés avec succès.")
     except Exception as e:
-        # log d'errer a la levé de l'exception 
-        print(f"Erreru est servenue lors  de la sauvegarde des livres : {e}") 
-    
-     
+        logger.error(f"Erreur lors de la sauvegarde des livres : {e}")

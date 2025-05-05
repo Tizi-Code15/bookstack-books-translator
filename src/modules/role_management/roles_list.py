@@ -1,63 +1,61 @@
-import requests, json, os, sys
+import requests
+import json
+import os
+import sys
 from core.config import URL, TOKEN
-from core.logger import logger  # Importing the logger setup
+from core.logger import logger  # Importation du logger
 
-# add parent directory
+# Ajouter le dossier parent au sys.path pour que Python puisse trouver les modules.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# define HTTP headers
+# Définir les headers pour les requêtes HTTP
 headers = {
-    "authorization": f"Token {TOKEN}",
+    "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
 }
 
-# Get list of roles from API
 def get_list_roles():
     try:
-        # Send GET request to the API endpoint
-        logger.info("Sending GET request to retrieve roles from API.")  # Log the request
+        logger.info("Envoi de la requête pour récupérer les rôles depuis l'API.")  # Log avant la requête
+        # Envoi de la requête GET
         response = requests.get(f"{URL}/api/roles", headers=headers)
-        response.raise_for_status()  # Check if the response status code is OK
+        response.raise_for_status()  # Vérifier si la réponse est valide (code 200)
+
+        # Vérifier si la réponse contient des données sous la clé "data"
         list_roles = response.json().get("data", [])
         
+        if not isinstance(list_roles, list):
+            logger.warning("Format des rôles incorrect. Attendu une liste de rôles.")
+            return []
+
         if list_roles:
-            logger.info(f"Successfully retrieved {len(list_roles)} roles.")  # Log success
-            print(f"Number of roles: {len(list_roles)}")
+            logger.info(f"{len(list_roles)} rôles récupérés avec succès.")  # Log succès
         else:
-            logger.warning("No roles found in the response.")  # Log if no roles are found
-            print("No list of roles created")
-        
+            logger.warning("Aucun rôle trouvé dans la réponse.")  # Log si aucun rôle trouvé
+
         return list_roles
-    
     except requests.exceptions.RequestException as e:
-        # Log the error if there's an issue with the request
-        logger.error(f"Error retrieving list of roles: {e}")
-        print(f"Error creating list: {e}")
+        logger.error(f"Erreur lors de la récupération des rôles : {e}")  # Log erreur
         return []
 
-# Save the list of roles to a JSON file
 def save_list_roles_to_json(list_info):
     if not list_info:
-        logger.warning("No roles to save.")  # Log if no data is passed to the function
-        print("No list to save")
+        logger.warning("Aucun rôle à sauvegarder.")  # Log si aucune donnée à sauvegarder
         return
-    
-    # Get absolute path from project root
-    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    data_dir = os.path.join(medulla_verse, 'data', 'Roles_Data')
+
+    # Chemin vers le dossier "src/data/Role_Data"
+    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..'))
+    data_dir = os.path.join(medulla_verse, 'data', 'Role_Data')
+
+    # Créer le répertoire si nécessaire
     os.makedirs(data_dir, exist_ok=True)
 
-    # Full path to the output JSON file
+    # Chemin complet vers le fichier JSON
     file_path = os.path.join(data_dir, 'list_info.json')
-    
+
     try:
-        # Write the role data to the file
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(list_info, f, indent=4, ensure_ascii=False)
-        logger.info(f"Roles data successfully saved to {file_path}")  # Log the successful save
-        print("User data successfully saved to:")
-    
+        logger.info("Les rôles ont été sauvegardés avec succès.")  # Log succès
     except Exception as e:
-        # Log any error encountered while saving the file
-        logger.error(f"Error creating the JSON file: {e}")
-        print(f"Error creating the JSON file: {e}")
+        logger.error(f"Erreur lors de la sauvegarde des rôles : {e}")  # Log erreur
