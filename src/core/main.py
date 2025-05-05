@@ -6,16 +6,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import json, time, logging
 
-from User_manage.users_id import get_users, save_users_to_json
-from User_manage.create_users import create_users, save_created_users_to_json
-from Roles_manage.roles_list import get_list_roles, save_list_roles_to_json
-from Password_setup.secure_password_input import ask_secure_password
-from Recycle_manage.recycle_bin import get_recycle, save_recycle_to_json
+from modules.user_management.users_id import get_users, save_users_to_json
+from modules.user_management.create_users import create_users, save_created_users_to_json
+from modules.role_management.roles_list import get_list_roles, save_list_roles_to_json
+from modules.password_management.secure_password_input import ask_secure_password
+from modules.recycle_management.recycle_bin import get_recycle, save_recycle_to_json
 
 # Directly import the English and German translation modules
-from trans_module.English import run_translation as run_english_translation
-from trans_module.German import run_translation as run_german_translation
-from Book_manage.getbooksid import get_books_id, save_books_info_to_json
+from modules.translation.English import run_translation as run_english_translation
+from modules.translation.German import run_translation as run_german_translation
+from modules.book_management.getbooksid import get_books_id, save_books_info_to_json
 
 # Import the logging module you created
 from core.logger import logger

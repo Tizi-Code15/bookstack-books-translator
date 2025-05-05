@@ -34,7 +34,7 @@ def save_users_to_json(users):
         return
     
     # Get absolute path from project root folder
-    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     data_dir = os.path.join(medulla_verse, 'data', 'User_Data')
     os.makedirs(data_dir, exist_ok=True)
 

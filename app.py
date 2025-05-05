@@ -1,4 +1,4 @@
-# run.py
+# app.py
 
 import sys
 import os
