@@ -1,14 +1,14 @@
-import requests
-import json
-import os
-import sys
-from core.config import URL, TOKEN
-from core.logger import logger  # Importation du logger
+import requests, json, os, sys
 
-# Ajouter le dossier parent au sys.path pour que Python puisse trouver les modules.
+from core.config import URL, TOKEN
+from core.logger import logger  #
+
+# Add the parent folder to sys.path so that Python can find the modules.
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Définir les headers pour les requêtes HTTP
+# Define the headers for HTTP requests
+
 headers = {
     "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
@@ -16,34 +16,34 @@ headers = {
 
 def get_list_roles():
     try:
-        logger.info("Envoi de la requête pour récupérer les rôles depuis l'API.")  # Log avant la requête
-        # Envoi de la requête GET
+        logger.info("Sending the request to retrieve the roles from the API.")  
+        # Sending the GET request
         response = requests.get(f"{URL}/api/roles", headers=headers)
-        response.raise_for_status()  # Vérifier si la réponse est valide (code 200)
+        response.raise_for_status()  # Check if the response is valid (status code 200)
 
-        # Vérifier si la réponse contient des données sous la clé "data"
+        # Check if the response contains data under the "data" key
         list_roles = response.json().get("data", [])
         
         if not isinstance(list_roles, list):
-            logger.warning("Format des rôles incorrect. Attendu une liste de rôles.")
+            logger.warning("Incorrect roles format. Expected a list of roles.")
             return []
 
         if list_roles:
-            logger.info(f"{len(list_roles)} rôles récupérés avec succès.")  # Log succès
+            logger.info(f"{len(list_roles)} Roles retrieved successfully.")  # Log succès
         else:
-            logger.warning("Aucun rôle trouvé dans la réponse.")  # Log si aucun rôle trouvé
+            logger.warning("No roles found in the response.")  
 
         return list_roles
     except requests.exceptions.RequestException as e:
-        logger.error(f"Erreur lors de la récupération des rôles : {e}")  # Log erreur
+        logger.error(f"Error while retrieving the roles: {e}")  # Log erreur
         return []
 
 def save_list_roles_to_json(list_info):
     if not list_info:
-        logger.warning("Aucun rôle à sauvegarder.")  # Log si aucune donnée à sauvegarder
+        logger.warning("No roles to save.")  # Log si aucune donnée à sauvegarder
         return
 
-    # Chemin vers le dossier "src/data/Role_Data"
+    # Path to the "src/data/Role_Data" folder
     medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..'))
     data_dir = os.path.join(medulla_verse, 'data', 'Role_Data')
 
@@ -56,6 +56,6 @@ def save_list_roles_to_json(list_info):
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(list_info, f, indent=4, ensure_ascii=False)
-        logger.info("Les rôles ont été sauvegardés avec succès.")  # Log succès
+        logger.info("The roles have been successfully saved.")  # Log succès
     except Exception as e:
-        logger.error(f"Erreur lors de la sauvegarde des rôles : {e}")  # Log erreur
+        logger.error(f"Error while saving the roles: {e}")  # Log erreur

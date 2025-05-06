@@ -2,9 +2,9 @@ import os
 import requests
 import json
 from core.config import URL, TOKEN, TRANSLATE_URL
-from core.logger import logger  # Utilise le logger global existant
+from core.logger import logger  # Use the existing global logger
 
-# Fonction de traduction
+# Translation function
 def translate(text, target_language="de"):
     payload = {
         "q": text,
@@ -13,38 +13,38 @@ def translate(text, target_language="de"):
         "format": "html"
     }
     try:
-        logger.debug(f"Demande de traduction envoyée pour : {text[:30]}... (vers {target_language})")  # Changer en debug
+        logger.debug(f"Translation request sent for: {text[:30]}... (to {target_language})")  # Debug log
         response = requests.post(TRANSLATE_URL, json=payload)
         response.raise_for_status()
         translated_text = response.json().get("translatedText", "")
-        logger.debug(f"Traduction réussie : {translated_text[:30]}...")  # Changer en debug
+        logger.debug(f"Translation successful: {translated_text[:30]}...")  # Debug log
         return translated_text
     except requests.exceptions.RequestException as e:
-        logger.error(f"Erreur de traduction : {e}")
-        return text  # Retourne le texte original en cas d'erreur
+        logger.error(f"Translation error: {e}")
+        return text  # Return original text in case of error
 
-# Sauvegarde des logs de traduction dans un fichier JSON
+# Save translation logs to a JSON file
 def save_translation_log(log_data):
-    """Sauvegarde des logs de traduction dans un fichier JSON."""
+    # Saves translation logs to a JSON file.
     if not log_data:
-        logger.warning("Aucun log à sauvegarder.")  # Log d'avertissement si aucun log à sauvegarder
+        logger.warning("No logs to save.")  # Warning log if no logs to save
         return
 
-    # Définir le répertoire de sauvegarde pour les logs de traduction
+    # Define the save directory for translation logs
     medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    data_dir = os.path.join(medulla_verse, 'data', 'German_Data')  # Le répertoire de sauvegarde des logs
-    os.makedirs(data_dir, exist_ok=True)  # Créer le répertoire si nécessaire
+    data_dir = os.path.join(medulla_verse, 'data', 'German_Data')  # Directory to save logs
+    os.makedirs(data_dir, exist_ok=True)  # Create directory if needed
 
     file_path = os.path.join(data_dir, 'German_translation.json')
 
     try:
-        # Sauvegarde des logs dans un fichier JSON
+        # Save logs to a JSON file
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=4, ensure_ascii=False)
     except Exception as e:
-        logger.error(f"Erreur lors de la sauvegarde des logs : {e}")
+        logger.error(f"Error while saving logs: {e}")
 
-# Fonction principale
+# Main function
 def run_translation(book_id):
     headers = {
         "Authorization": f"Token {TOKEN}",
@@ -53,19 +53,19 @@ def run_translation(book_id):
 
     log = []
 
-    logger.info(f"Démarrage de la traduction du livre ID : {book_id}")
+    logger.info(f"Starting translation of book ID: {book_id}")
 
     try:
-        # Récupération du livre
+        # Retrieve the book
         book_resp = requests.get(f"{URL}/api/books/{book_id}", headers=headers)
         book_resp.raise_for_status()
         book = book_resp.json()
 
-        # Traduction du titre et de la description
+        # Translate title and description
         translated_title = translate(book.get("name", ""))
         translated_desc = translate(book.get("description", ""))
 
-        # Création du livre traduit
+        # Create the translated book
         book_payload = {
             "name": translated_title,
             "description": translated_desc
@@ -73,9 +73,9 @@ def run_translation(book_id):
         new_book_resp = requests.post(f"{URL}/api/books", headers=headers, json=book_payload)
         new_book_resp.raise_for_status()
         new_book_id = new_book_resp.json()["id"]
-        log.append({"step": "book", "message": f"Nouveau livre créé : {new_book_id} - {translated_title}"})
+        log.append({"step": "book", "message": f"New book created: {new_book_id} - {translated_title}"})
 
-        # Récupération et traduction des chapitres
+        # Retrieve and translate chapters
         chapters_resp = requests.get(f"{URL}/api/chapters", headers=headers)
         chapters_resp.raise_for_status()
         chapters = [c for c in chapters_resp.json().get("data", []) if c.get("book_id") == book_id]
@@ -83,7 +83,7 @@ def run_translation(book_id):
         for chapter in chapters:
             chapter_id = chapter["id"]
             translated_chapter_name = translate(chapter["name"])
-            log.append({"step": "chapter", "message": f"Chapitre traduit : {translated_chapter_name}"})
+            log.append({"step": "chapter", "message": f"Chapter translated: {translated_chapter_name}"})
 
             chapter_payload = {
                 "book_id": new_book_id,
@@ -93,7 +93,7 @@ def run_translation(book_id):
             new_chapter_resp.raise_for_status()
             new_chapter_id = new_chapter_resp.json()["id"]
 
-            # Récupération et traduction des pages
+            # Retrieve and translate pages
             pages_resp = requests.get(f"{URL}/api/pages", headers=headers)
             pages_resp.raise_for_status()
             pages = [p for p in pages_resp.json().get("data", []) if p.get("chapter_id") == chapter_id]
@@ -116,12 +116,12 @@ def run_translation(book_id):
                 created_page_resp = requests.post(f"{URL}/api/pages", headers=headers, json=page_payload)
                 created_page_resp.raise_for_status()
                 created_page = created_page_resp.json()
-                log.append({"step": "page", "message": f"Page créée : {created_page['id']}"})
+                log.append({"step": "page", "message": f"Page created: {created_page['id']}"})
 
-        # Sauvegarde finale des logs
+        # Final log save
         save_translation_log(log)
-        logger.info("Traduction vers l'allemand terminée avec succès.")
+        logger.info("Translation to German completed successfully.")
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Erreur pendant la traduction : {e}")
-        save_translation_log(log)  # Sauvegarder les logs partiels en cas d'erreur
+        logger.error(f"Error during translation: {e}")
+        save_translation_log(log)  # Save partial logs in case of error

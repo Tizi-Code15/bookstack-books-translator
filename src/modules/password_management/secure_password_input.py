@@ -1,26 +1,27 @@
 import getpass
 import re
-from core.logger import logger  # Importation du logger
+from core.logger import logger  
 
 def ask_secure_password():
-    """Demande à l'utilisateur de saisir et confirmer son mot de passe."""
+    # Asks the user to enter and confirm their password.
     while True:
-        password = getpass.getpass("Entrez votre mot de passe : ")
-        confirm = getpass.getpass("Confirmez votre mot de passe : ")
+        password = getpass.getpass("Enter your password:")
+        confirm = getpass.getpass("Confirm your password:")
 
         if password != confirm:
-            log_and_print_error("Les mots de passe ne correspondent pas.")
+            log_and_print_error("The passwords do not match.")
             continue
 
         if not validate_password_caract(password):
-            log_and_print_error("Mot de passe trop faible. Il doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un symbole.")
+            log_and_print_error("Password too weak. It must contain at least 8 characters, an uppercase letter, a lowercase letter, a number, and a symbol.")
             continue
         
-        logger.info("Mot de passe défini avec succès.")
+        logger.info("Password set successfully.")
         return password
 
 def validate_password_caract(pwd):
-    """Valide le mot de passe en vérifiant sa longueur, majuscules, minuscules, chiffres et symboles."""
+    # Validates the password by checking its length, uppercase letters, lowercase letters, numbers, and symbols.
+
     is_valid = (
         len(pwd) >= 8 and
         re.search(r"[A-Z]", pwd) and
@@ -33,8 +34,7 @@ def validate_password_caract(pwd):
         logger.warning("Le mot de passe ne respecte pas les critères requis.")
     return is_valid
 
- #Enregistre un message d'erreur dans les logs et l'affiche à l'utilisateur.
+# Logs an error message and displays it to the user.
 def log_and_print_error(message):
-    """Logge et affiche un message d'erreur."""
     logger.warning(message)
     print(message)

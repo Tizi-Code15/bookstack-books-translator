@@ -1,20 +1,18 @@
-import requests
-import json
-import os
-import sys
+import requests, json, os, sys
+
 from core.config import URL, TOKEN
-from core.logger import logger  # Importation du logger
+from core.logger import logger  
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Configuration des en-têtes pour les requêtes API
+# Configure headers for API requests
 headers = {
     "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
 }
 
 def create_user(name, email, password, roles=None):
-    """Crée un utilisateur via l'API."""
+    # Creates a user via the API.
     if roles is None:
         roles = []
     
@@ -26,33 +24,33 @@ def create_user(name, email, password, roles=None):
     }
     
     try:
-        # Log avant la requête
-        logger.info(f"Envoi de la requête pour créer un utilisateur : {name} ({email})")
+        # Log before making the request
+        logger.info(f"Sending request to create user: {name} ({email})")
         response = requests.post(f"{URL}/api/users", headers=headers, json=data)
-        response.raise_for_status()  # Vérifie le statut de la réponse
+        response.raise_for_status()  # Check the response status
         
-        # Extraction de l'utilisateur créé
+        # Extract the created user
         created_user = response.json()
         
-        # Log de succès
-        logger.info(f"Utilisateur créé avec succès : {created_user.get('name', 'Inconnu')} (ID: {created_user.get('id')})")
+        # Success log
+        logger.info(f"User created successfully: {created_user.get('name', 'Unknown')} (ID: {created_user.get('id')})")
         return created_user
     
     except requests.exceptions.RequestException as e:
-        logger.error(f"Erreur lors de la création de l'utilisateur : {e}")  # Log d'erreur
-        return None  # Retourne None en cas d'erreur
+        logger.error(f"Error creating user: {e}")  # Error log
+        return None  # Return None in case of error
 
 def save_created_users_to_json(users_info):
-    """Sauvegarde les utilisateurs créés dans un fichier JSON."""
+    # Saves the created users to a JSON file.
     if not users_info:
-        logger.warning("Aucun utilisateur à sauvegarder.")  # Log si aucune donnée à sauvegarder
+        logger.warning("No users to save.")  # Log if there are no users to save
         return
     
-    # Définir le répertoire de sauvegarde pour les utilisateurs créés
-    # Correction ici pour enregistrer dans 'data/User_Data' sans ajouter 'src/'
+    # Define the save directory for the created users
+    # Corrected to save in 'data/User_Data' without adding 'src/'
     medulla_verse = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    data_dir = os.path.join(medulla_verse, 'data', 'User_Data')  # Ici, 'data' est directement sous le dossier du projet
-    os.makedirs(data_dir, exist_ok=True)  # Créer le répertoire si nécessaire
+    data_dir = os.path.join(medulla_verse, 'data', 'User_Data')  # 'data' is directly under the project folder
+    os.makedirs(data_dir, exist_ok=True)  # Create the directory if necessary
     
     file_path = os.path.join(data_dir, 'users_info.json')
     
@@ -61,5 +59,5 @@ def save_created_users_to_json(users_info):
             json.dump(users_info, f, indent=4, ensure_ascii=False)
             
     except Exception as e:
-        # Log d'erreur si la sauvegarde échoue
-        logger.error(f"Erreur lors de la sauvegarde des utilisateurs créés : {e}")
+        # Error log if the save fails
+        logger.error(f"Error saving created users: {e}")

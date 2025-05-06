@@ -1,16 +1,11 @@
-import sys
-import os
-import json
-import time
+import sys, json, time, os
 
 from core.logger import logger
 
-# Ajouter le dossier 'src' au sys.path pour que Python puisse trouver les modules.
-SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if SRC_PATH not in sys.path:
-    sys.path.insert(0, SRC_PATH)
+# Add the 'src' folder to sys.path so Python can find the modules
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Imports des modules
+# Import modules
 from modules.user_management.users_id import get_users, save_users_to_json
 from modules.user_management.create_users import create_user, save_created_users_to_json
 from modules.role_management.roles_list import get_list_roles, save_list_roles_to_json
@@ -19,16 +14,14 @@ from modules.recycle_management.recycle_bin import get_recycle, save_recycle_to_
 from modules.translation.English import run_translation as run_english_translation
 from modules.translation.German import run_translation as run_german_translation
 from modules.recycle_management.recycle_bin import save_recycle_to_json
-
-# Importation de la fonction get_books_id
 from modules.book_management.getbooksid import get_books_id
 
 
 def user_manag():
-    """
-    Fonction de gestion des utilisateurs.
-    Elle permet d'afficher les rôles, créer un utilisateur, et sauvegarder les infos.
-    """
+    
+    # User management function.
+    # Allows viewing roles, creating a user, and saving information.
+    
     list_roles = get_list_roles()
     if not list_roles:
         logger.error("No roles available.")
@@ -36,7 +29,7 @@ def user_manag():
 
     save_list_roles_to_json(list_roles)
 
-    logger.info("Available roles list:")
+    logger.info("List of available roles:")
     for role in list_roles:
         logger.info(f"{role['id']} : {role['display_name']}")
 
@@ -55,7 +48,7 @@ def user_manag():
     if users_info:
         save_created_users_to_json(users_info)
     else:
-        logger.error("No info to save.")
+        logger.error("No information to save.")
 
     users_data = get_users()
     if users_data:
@@ -63,26 +56,27 @@ def user_manag():
     else:
         logger.error("No users to retrieve.")
 
+
 def main():
-    """
-    Fonction principale qui dirige le programme selon le choix de l'utilisateur.
-    """
+    
+    #Main function that directs the program according to the user's choice.
+   
     logger.info("Welcome to Medulla Verse")
     time.sleep(2)
 
     logger.info("What would you like to do?")
     logger.info("- Translate")
     logger.info("- Manage users")
-    logger.info("- Manage Recycle Bin")
+    logger.info("- Manage the recycle bin")
     time.sleep(2)
 
-    logger.info("Press 'T' to Translate, 'U' for User Manage, 'R' for Recycle Bin")
+    logger.info("Press 'T' for Translation, 'U' for User Management, 'R' for Recycle Bin")
     choice = input("Enter your choice: ").strip().upper()
 
     if choice == "T":
         logger.info("You have chosen translation.")
 
-        books = get_books_id()  # Appel de la fonction correctement importée
+        books = get_books_id()  # Calling the properly imported function
         if not books:
             logger.error("No books found.")
             return
@@ -98,7 +92,7 @@ def main():
                 return
         except ValueError:
             logger.error("Invalid input.")
-            return  
+            return
 
         logger.info("Choose a language:")
         logger.info("1 - English")
@@ -119,7 +113,7 @@ def main():
         user_manag()
 
     elif choice == "R":
-        logger.info("You have chosen to manage the Recycle Bin.")
+        logger.info("You have chosen to manage the recycle bin.")
         recycle_data = get_recycle()
         if recycle_data:
             save_recycle_to_json(recycle_data)
