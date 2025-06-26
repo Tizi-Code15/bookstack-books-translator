@@ -122,6 +122,31 @@ def run_translation(book_id):
                 created_page = created_page_resp.json()
                 log.append({"step": "page", "message": f"Page created: {created_page['id']}"})
 
+        # Nouvelle partie : gérer les pages sans chapitre 
+        pages_resp = requests.get(f"{URL}/api/pages", headers=headers)
+        pages_resp.raise_for_status()
+        pages_no_chapter = [p for p in pages_resp.json().get("data", []) if p.get("book_id") == book_id and not p.get("chapter_id")]
+
+        for page in pages_no_chapter:
+            page_id = page["id"]
+            page_detail_resp = requests.get(f"{URL}/api/pages/{page_id}", headers=headers)
+            page_detail_resp.raise_for_status()
+            page_data = page_detail_resp.json()
+
+            translated_title = translate(page_data.get("name", ""))
+            translated_html = translate(page_data.get("html", ""))
+
+            page_payload = {
+                "book_id": new_book_id,
+                "name": translated_title,
+                "html": translated_html
+            }
+
+            created_page_resp = requests.post(f"{URL}/api/pages", headers=headers, json=page_payload)
+            created_page_resp.raise_for_status()
+            created_page = created_page_resp.json()
+            log.append({"step": "page", "message": f"Page created: {created_page['id']}"})
+
         # Save logs
         save_translation_log(log)
         logger.info("Translation to English completed successfully.")
