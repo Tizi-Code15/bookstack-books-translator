@@ -8,6 +8,9 @@ from modules.headers import headers
 # Add parent folder to sys.path to import core and modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Constants
+SAVE_DIR = os.path.join("src", "data", "Books_Data")
+SAVE_FILE = "filtered_books.json"
 
 # Get list of book 
 def fetch_books_list():
@@ -44,9 +47,7 @@ def filter_books_list(books_list):
 
 def save_filtered_list(data):
 
-    save_path = os.path.join("src","data", "Books_Data")
-    os.makedirs(save_path, exist_ok=True)
-    file_path = os.path.join(save_path, "filtered_list.json")
+    file_path = os.path.join(SAVE_DIR,  SAVE_FILE)
 
     try:
         with open(file_path, "w", encoding="utf-8") as f:
