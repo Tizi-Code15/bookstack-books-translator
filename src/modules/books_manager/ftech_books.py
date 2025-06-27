@@ -55,6 +55,10 @@ def save_filtered_list(data):
     except Exception as e:
         logger.error(f"Error saving filtred_list: {e}")
 
+if __name__ == '__main__':
+    books_list = fetch_books_list()
+    filtered_list = filter_books_list(books_list)
+    save_filtered_list(filtered_list)
 
 
 
