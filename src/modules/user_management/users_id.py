@@ -1,6 +1,6 @@
 import requests, json, os, sys
 
-from core.config import URL, TOKEN
+from core.config import BASE_URL, TOKEN
 from core.logger import logger  
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -15,7 +15,7 @@ def get_users():
     # Fetches the list of users from the API.
     try:
         logger.info("Sending request to fetch users from the API.")
-        response = requests.get(f"{URL}/api/users", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/users", headers=headers)
         response.raise_for_status()  # Check if the request was successful
         
         # Process the users returned by the API

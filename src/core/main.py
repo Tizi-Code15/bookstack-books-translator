@@ -14,7 +14,7 @@ from modules.recycle_management.recycle_bin import get_recycle, save_recycle_to_
 from modules.translation.English import run_translation as run_english_translation
 from modules.translation.German import run_translation as run_german_translation
 from modules.recycle_management.recycle_bin import save_recycle_to_json
-from modules.book_management.getbooksid import get_books_id
+from modules.books_manager.ftech_books import fetch_books_list
 
 
 def user_manag():
@@ -61,7 +61,7 @@ def main():
     
     #Main function that directs the program according to the user's choice.
    
-    logger.info("Welcome to Medulla Verse")
+    logger.info("Welcome to Bookstack-Books-Translator")
     time.sleep(2)
 
     logger.info("What would you like to do?")
@@ -76,7 +76,7 @@ def main():
     if choice == "T":
         logger.info("You have chosen translation.")
 
-        books = get_books_id()  # Calling the properly imported function
+        books = fetch_books_list()  # Calling the properly imported function
         if not books:
             logger.error("No books found.")
             return

@@ -1,15 +1,13 @@
 import requests, json, os, sys
 
 from core.config import URL, TOKEN
-from core.logger import logger  
+from core.logger import logger 
+ 
+from modules.headers import headers
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Configure headers for API requests
-headers = {
-    "Authorization": f"Token {TOKEN}",
-    "Content-Type": "application/json"
-}
+
 
 def create_user(name, email, password, roles=None):
     # Creates a user via the API.
