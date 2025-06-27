@@ -5,7 +5,7 @@ from core.config import BASE_URL, TOKEN, LIST_ENDPOINT
 from core.logger import logger
 from modules.headers import headers
 
-
+# Add parent folder to sys.path to import core and modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 def fetch_books_list():
 
     try:
-        logger.info("Sending the request to retrieve the books from the API.")
+        logger.info("Sending request to retrieve books from API.")
         response = requests.get(LIST_ENDPOINT, headers=headers)
         response.raise_for_status()
         books_list = response.json().get("data", [])
@@ -24,10 +24,10 @@ def fetch_books_list():
         return []
     
 
-# filtre json data that content list of books
+#filtration data
 def filter_books_list(books_list):
 
-    filtred_list = []
+    filtered_list = []
 
     for item in books_list :
         list_data = {
@@ -36,9 +36,10 @@ def filter_books_list(books_list):
             "created_at" : item.get("created_at"),
             "updated_at" : item.get("updated_at")
         }
-        filtred_list.append(list_data)
+        filtered_list.append(list_data)
 
-    return filtred_list
+    return filtered_list
+
 
 
 
