@@ -40,6 +40,21 @@ def filter_books_list(books_list):
 
     return filtered_list
 
+# save filtred_list on data folder 
+
+def save_filtered_list(data):
+
+    save_path = os.path.join("src","data", "Books_Data")
+    os.makedirs(save_path, exist_ok=True)
+    file_path = os.path.join(save_path, "filtered_list.json")
+
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent= 4, ensure_ascii=False)
+        logger.info(f"filtred_list saved to {file_path}")
+    except Exception as e:
+        logger.error(f"Error saving filtred_list: {e}")
+
 
 
 
