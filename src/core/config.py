@@ -1,4 +1,4 @@
-# Configuration
+# Config
 from dotenv import load_dotenv
 import os
 
@@ -18,8 +18,8 @@ CREATE_ENDPOINT = f"{BASE_URL}/api/books"
 
 
 
+chapterendpoint = f"{BASE_URL}/api/chapters"
 
-chapterendoint = f"{BASE_URL}/api/chapters"
 
 # Optionnel : Vérifier si les variables sont bien chargées
 if not BASE_URL or not TOKEN or not TRANSLATE_URL:

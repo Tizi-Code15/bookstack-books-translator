@@ -1,12 +1,12 @@
 # ftech_books
 import requests , os, json, sys
 
-from core.config import BASE_URL, TOKEN, LIST_ENDPOINT
+from core.config import  LIST_ENDPOINT
 from core.logger import logger
-from modules.headers import headers
+from modules.headers.auth_headers import api_auth_headers
 
 # Add parent folder to sys.path to import core and modules
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Constants
 SAVE_DIR = os.path.join("src", "data", "Books_Data")
@@ -17,7 +17,7 @@ def fetch_books_list():
 
     try:
         logger.info("Sending request to retrieve books from API.")
-        response = requests.get(LIST_ENDPOINT, headers=headers)
+        response = requests.get(LIST_ENDPOINT, headers=api_auth_headers)
         response.raise_for_status()
         books_list = response.json().get("data", [])
         logger.info(f"{len(books_list)} Books retrieved successfully.")
@@ -48,6 +48,7 @@ def filter_books_list(books_list):
 def save_filtered_list(data):
 
     file_path = os.path.join(SAVE_DIR,  SAVE_FILE)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     try:
         with open(file_path, "w", encoding="utf-8") as f:

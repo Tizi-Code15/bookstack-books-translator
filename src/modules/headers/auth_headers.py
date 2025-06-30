@@ -1,9 +1,7 @@
-import os
+# headers
 from core.config import TOKEN
-from core.logger import logger  
 
-
-headers = {
+api_auth_headers = {
     "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json"
 }

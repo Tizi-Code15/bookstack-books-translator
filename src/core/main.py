@@ -14,7 +14,7 @@ from modules.recycle_management.recycle_bin import get_recycle, save_recycle_to_
 from modules.translation.English import run_translation as run_english_translation
 from modules.translation.German import run_translation as run_german_translation
 from modules.recycle_management.recycle_bin import save_recycle_to_json
-from modules.books_manager.ftech_books import fetch_books_list
+from modules.books_manager.fetch_books import fetch_books_list
 
 
 def user_manag():

@@ -3,7 +3,7 @@ import requests, json, os, sys
 from core.config import URL, TOKEN
 from core.logger import logger 
  
-from modules.headers import headers
+from modules.headers import auth_headers
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -24,7 +24,7 @@ def create_user(name, email, password, roles=None):
     try:
         # Log before making the request
         logger.info(f"Sending request to create user: {name} ({email})")
-        response = requests.post(f"{URL}/api/users", headers=headers, json=data)
+        response = requests.post(f"{URL}/api/users", headers=auth_headers, json=data)
         response.raise_for_status()  # Check the response status
         
         # Extract the created user
