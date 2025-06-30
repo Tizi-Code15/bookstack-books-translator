@@ -1,15 +1,19 @@
 # ftech_books
 import requests , os, json, sys
 
+
+# Add parent folder to sys.path to import core and modules
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from core.config import  LIST_ENDPOINT
 from core.logger import logger
 from modules.headers.auth_headers import api_auth_headers
 
-# Add parent folder to sys.path to import core and modules
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 
 # Constants
-SAVE_DIR = os.path.join("src", "data", "Books_Data")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+SAVE_DIR = os.path.join(BASE_DIR, "data", "Books_Data")
 SAVE_FILE = "filtered_books.json"
 
 # Get list of book 
