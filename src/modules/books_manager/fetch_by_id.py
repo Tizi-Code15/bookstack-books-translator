@@ -1,6 +1,6 @@
 import requests, json
 
-from core.config import BASE_URL, TOKEN
+from core.config import BASE_URL
 #from core.logger import logger
 from modules.headers import auth_headers
  
@@ -26,3 +26,17 @@ def filter_chapter(chapter_data):
         "description" : chapter_data.get("description")
     }
     return filtered_chapter_data
+
+# Read pages from api 
+def fetch_page_byid(page_id):
+
+    try:
+        # logger here 
+        page_response = requests.get(f"{BASE_URL}/api/pages/{page_id}", headers = auth_headers)
+        page_response.raise_for_status()
+        page_data = page_response.json()
+        return page_data
+    except requests.exceptions.RequestException as e:
+        # logger after here 
+        return None
+
