@@ -1,97 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
-    <title>Bookstack-translator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../static/stylesheet.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+  />
+  <title>Bookstack-translator</title>
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">Mon Logo</a>
 
-            <nav class="navbar" role="navigation" aria-label="main navigation">
-                <div class="navbar-brand">
-                    <a class="navbar-item" href="/">
-                        Mon Logo
-                    </a>
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navbarBasicExample"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
 
-                    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </a>
-                </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item">Home</a>
+        <a class="navbar-item">Documentation</a>
 
-                    <div id="navbarBasicExample" class="navbar-menu">
-                            <div class="navbar-start">
-                            <a class="navbar-item">Home</a>
-                            <a class="navbar-item">Documentation</a>
-                                    <div class="navbar-item has-dropdown is-hoverable">
-                                        <a class="navbar-link">More </a>
-                                            <div class="navbar-dropdown">
-                                                <a class="navbar-item">About</a>
-                                                <a class="navbar-item">Contact</a>
-                                                <hr class="navbar-divider">
-                                                <a class="navbar-item">Report an issue</a>
-                                            </div>
-                                    </div>
-                            </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">More</a>
 
-                            <div class="navbar-end">
-                                <div class="navbar-item">
-                                    <div class="buttons">
-                                        <a class="button is-primary"> <strong>Sign up</strong></a>
-                                        <a class="button is-light"> Log in</a>
-                                    </div>
-                                </div>
-                    </div>
-                        </div>
-            </nav>
+          <div class="navbar-dropdown">
+            <a class="navbar-item">About</a>
+            <a class="navbar-item">Comments</a>
+            <hr class="navbar-divider" />
+            <a class="navbar-item">Contact</a>
+          </div>
+        </div>
+      </div>
 
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-primary"><strong>Sign up</strong></a>
+            <a class="button is-light">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
 
+ <!-- Wrapper flex centré -->
+<div class="section">
+  <div class="container is-flex is-justify-content-center">
+    <div class="content is-small" style="max-width: 800px;">
+      <h1>Bookstack Books Translator</h1>
+      <p>
+        Ce projet regroupe plusieurs scripts, actuellement en développement,
+        destinés à simplifier et automatiser la traduction des livres hébergés via
+        Bookstack...
+      </p>
 
+      <h2>Objectif</h2>
+      <p>
+        Fournir un outil efficace pour améliorer et automatiser la traduction des
+        livres Bookstack...
+      </p>
 
+      <h3>Fonctionnalités principales</h3>
+      <ul>
+        <li>Outils d’interaction avec l’API Bookstack (en cours de développement).</li>
+        <li>Intégration de solutions de traduction automatique...</li>
+        <li>
+          Partie back-end développée en Python, hébergée sur un serveur dédié...
+        </li>
+        <li>
+          Interface intuitive affichant :
+          <ul>
+            <li>La liste complète des livres disponibles...</li>
+            <li>Un inventaire rapide des livres traduits...</li>
+            <li>Une fonctionnalité facilitant le lancement...</li>
+          </ul>
+        </li>
+      </ul>
 
+      <h4>État du projet</h4>
+      <p>
+        Le projet est en cours d’évolution active...
+      </p>
 
+      <h5>Prérequis techniques</h5>
+      <ul>
+        <li>Environnement Python 3.x.</li>
+        <li>Accès à une instance Bookstack fonctionnelle.</li>
+      </ul>
 
+      <h5>Licence</h5>
+      <p>
+        Sous licence MIT, ce projet est libre d’utilisation...
+      </p>
+    </div>
+  </div>
+</div>
 
-            <div class="content is-small">
-                <h1>Bookstack Books Translator</h1>
-                    <p>
-                        Ce projet regroupe plusieurs scripts, actuellement en développement, destinés à simplifier et automatiser la traduction des livres hébergés via Bookstack.
-                        Bookstack est une plateforme open source de gestion de documentation et de contenu, largement utilisée pour créer, organiser et partager des livres, guides techniques et documentations internes.
-                    </p>
-                <h2>Objectif</h2>
-                    <p>
-                        Fournir un outil efficace pour améliorer et automatiser la traduction des livres Bookstack, grâce à des scripts personnalisés et évolutifs.
-                    </p>
-                <h3>Fonctionnalités principales</h3>    
-                    <ul>
-                        <li>Outils d’interaction avec l’API Bookstack (en cours de développement).</li>
-                        <li>Outils d’interaction avec l’API Bookstack (en cours de développement).</li>
-                        <li>Intégration de solutions de traduction automatique (en phase d’implémentation).</li>
-                        <li>Partie back-end développée en Python, hébergée sur un serveur dédié pour assurer performance et fiabilité.</li>
-                        <li>Interface intuitive affichant :
-                             <ul>
-                                <li>La liste complète des livres disponibles sur Bookstack, avec un design clair et agréable.</li>
-                                <li>Un inventaire rapide des livres traduits et non traduits pour un suivi simplifié.</li>
-                                <li>Une fonctionnalité facilitant le lancement de la traduction, directement depuis l’interface.</li>   
-                            </ul>
-                        </li>
-                    </ul>
-                <h4>État du projet</h4>
-                    <p>
-                        Le projet est en cours d’évolution active. Toute contribution, idée ou retour est le bienvenu afin d’enrichir et d’améliorer les outils.
-                    </p>
-                <h5>Prérequis techniques</h5>
-                    <ul>
-                        <li>Environnement Python 3.x.</li>
-                        <li>Accès à une instance Bookstack fonctionnelle.</li>
-        
-                    </ul>
-                <h5>Licence</h5>
-                    <p>Sous licence MIT, ce projet est libre d’utilisation, de modification et de redistribution.</p>        
-            </div>
-            
 </body>
 </html>

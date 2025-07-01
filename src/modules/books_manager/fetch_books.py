@@ -40,6 +40,7 @@ def filter_books_list(books_list):
         list_data = {
             "id": item.get("id"),
             "name" : item.get("name"),
+            "description" : item.get("description"),
             "created_at" : item.get("created_at"),
             "updated_at" : item.get("updated_at")
         }
